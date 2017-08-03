@@ -10,32 +10,65 @@
     <context:property-placeholder location="classpath:jdbc.properties" />
 
     <!-- 2.数据库连接池 -->
-    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+    <!-- <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"> -->
         <!-- 配置连接池属性 -->
-        <property name="driverClass" value="${jdbc.driver}" />
-        <property name="jdbcUrl" value="${jdbc.url}" />
-        <property name="user" value="${jdbc.username}" />
-        <property name="password" value="${jdbc.password}" />
+    <!--    <property name="driverClass" value="${jdbc.driver}" />
+       <property name="jdbcUrl" value="${jdbc.url}" />
+       <property name="user" value="${jdbc.username}" />
+       <property name="password" value="${jdbc.password}" /> -->
 
-        <!-- c3p0连接池的私有属性 -->
-        <property name="maxPoolSize" value="30" />
-        <property name="minPoolSize" value="10" />
+       <!-- c3p0连接池的私有属性 -->
+    <!--    <property name="maxPoolSize" value="30" />
+        <property name="minPoolSize" value="10" /> -->
         <!-- 关闭连接后不自动commit -->
-        <property name="autoCommitOnClose" value="false" />
-        <!-- 获取连接超时时间 -->
-        <property name="checkoutTimeout" value="10000" />
-        <!-- 当获取连接失败重试次数 -->
-        <property name="acquireRetryAttempts" value="2" />
-    </bean>
+    <!--   <property name="autoCommitOnClose" value="false" />-->
+       <!-- 获取连接超时时间 -->
+    <!--   <property name="checkoutTimeout" value="10000" />-->
+       <!-- 当获取连接失败重试次数 -->
+    <!--   <property name="acquireRetryAttempts" value="2" />
+   </bean> -->
 
-    <!-- 3.配置SqlSessionFactory对象 -->
+   <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+       <!-- 数据库基本信息配置 -->
+        <property name="url" value="jdbc:mysql://localhost:3306/test_wxx" />
+        <property name="username" value="root" />
+        <property name="password" value="root" />
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <!--<property name="filters" value="${filters}" />-->
+        <!-- 最大并发连接数 -->
+        <property name="maxActive" value="2" />
+        <!-- 初始化连接数量 -->
+        <property name="initialSize" value="2" />
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="3000" />
+        <!-- 最小空闲连接数 -->
+        <property name="minIdle" value="2" />
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="30000" />
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="30000" />
+        <property name="validationQuery" value="30000" />
+       <!-- <property name="testWhileIdle" value="30" />
+       <property name="testOnBorrow" value="${testOnBorrow}" />
+       <property name="testOnReturn" value="${testOnReturn}" />
+       <property name="maxOpenPreparedStatements" value="${maxOpenPreparedStatements}" />-->
+       <!-- 打开removeAbandoned功能 -->
+       <!-- <property name="removeAbandoned" value="${removeAbandoned}" />-->
+       <!-- 1800秒，也就是30分钟 -->
+       <property name="removeAbandonedTimeout" value="1800" />
+       <!-- 关闭abanded连接时输出错误日志 -->
+    <!-- <property name="logAbandoned" value="${logAbandoned}" />-->
+</bean>
+
+
+<!-- 3.配置SqlSessionFactory对象 -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <!-- 注入数据库连接池 -->
         <property name="dataSource" ref="dataSource" />
         <!-- 配置MyBaties全局配置文件:mybatis-config.xml -->
         <property name="configLocation" value="classpath:mybatis-config.xml" />
         <!-- 扫描entity包 使用别名 -->
-        <property name="typeAliasesPackage" value="com.soecode.lyf.entity" />
+        <property name="typeAliasesPackage" value="com.soecode.wxx.entity" />
         <!-- 扫描sql配置文件:mapper需要的xml文件 -->
         <property name="mapperLocations" value="classpath:mapper/*.xml" />
     </bean>
@@ -45,6 +78,6 @@
         <!-- 注入sqlSessionFactory -->
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
         <!-- 给出需要扫描Dao接口包 -->
-        <property name="basePackage" value="com.soecode.lyf.dao" />
+        <property name="basePackage" value="com.soecode.wxx.mapper" />
     </bean>
 </beans>
